@@ -160,7 +160,49 @@ calculator_tool = Tool(
     handler=calculator,
 )
 
-registry = ToolRegistry([calculator_tool])
+
+def square(x: float) -> float:
+    return x * x
+
+
+def add(a: float, b: float) -> float:
+    return a + b
+
+
+square_tool = Tool(
+    name="square",
+    description="Square a number.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "x": {
+                "type": "number",
+            },
+        },
+        "required": ["x"],
+    },
+    handler=square,
+)
+
+add_tool = Tool(
+    name="add",
+    description="Add two numbers.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "a": {
+                "type": "number",
+            },
+            "b": {
+                "type": "number",
+            },
+        },
+        "required": ["a", "b"],
+    },
+    handler=add,
+)
+
+registry = ToolRegistry([calculator_tool, square_tool, add_tool])
 
 model = OpenAICompatibleModel(
     endpoint=url,
@@ -277,7 +319,10 @@ agent = AgentLoop(
     max_steps=5,
 )
 
-answer = agent.run("必须使用 calculator 工具计算 1234567 * 891011")
+answer = agent.run("""必须使用工具完成:
+先计算 1234 的平方，
+再给结果加上 5678。
+不要自己心算。""")
 
 print("\nFINAL ANSWER:")
 print(answer)
