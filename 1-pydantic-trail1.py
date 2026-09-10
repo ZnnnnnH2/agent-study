@@ -18,7 +18,7 @@ class ChatCompletionResponse(BaseModel):
     model: str
     choices: list[Choice]
   
-url = "http://10.8.0.142:1234/v1/chat/completions"
+url = "http://100.107.139.24:1234/v1/chat/completions"
 
 headers = {
   "Authorization": "Bearer sk-lm-gQhVZVvU:N4TiDU8wD38PPbK99thz",
@@ -44,8 +44,10 @@ payload = {
 response = requests.post(url, headers=headers, json=payload)
 
 if response.status_code == 200:
-    data = response.json()
+    raw_data = response.json()
+    data = ChatCompletionResponse.model_validate(raw_data)
     print(data)
+    print(data.choices[0].message.content)
 else:
     print(f"Request failed with status code: {response.status_code}")
     print(response.text)
